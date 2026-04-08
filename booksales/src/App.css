@@ -1,0 +1,348 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
+
+:root {
+  --bg-soft: #f9f6f2;
+  --panel: rgba(255, 255, 255, 0.72);
+  --text-main: #1d1a16;
+  --text-muted: #63584c;
+  --accent: #c24721;
+  --accent-dark: #923116;
+  --line: #e5d4c2;
+  --shadow: 0 20px 45px rgba(50, 30, 12, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at 10% 10%, #ffd7b8 0%, transparent 35%),
+    radial-gradient(circle at 90% 20%, #f7c7b1 0%, transparent 32%),
+    linear-gradient(160deg, #fffaf5 0%, var(--bg-soft) 100%);
+}
+
+#root {
+  width: 100%;
+}
+
+.app-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 28px 16px 24px;
+}
+
+.glass-panel {
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(9px);
+  box-shadow: var(--shadow);
+}
+
+.app-header {
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 16px;
+  animation: riseIn 0.7s ease-out both;
+}
+
+.app-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 3vw, 2.75rem);
+  margin-bottom: 8px;
+}
+
+.app-header p {
+  color: var(--text-muted);
+  max-width: 620px;
+}
+
+.nav-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+  border-radius: 18px;
+  padding: 10px;
+  animation: riseIn 0.9s ease-out both;
+}
+
+.nav-tabs button {
+  border: 1px solid var(--line);
+  background: #fff7ef;
+  color: #5f3527;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.nav-tabs button:hover {
+  transform: translateY(-1px);
+  border-color: #d7b9a1;
+}
+
+.nav-tabs button.active {
+  background: linear-gradient(140deg, var(--accent), #d9744f);
+  color: #fff;
+  border-color: transparent;
+}
+
+.page-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+  animation: riseIn 0.65s ease-out both;
+}
+
+.page-title {
+  font-size: clamp(1.55rem, 2.5vw, 2rem);
+  font-weight: 700;
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+}
+
+.landing-hero {
+  border-radius: 24px;
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 20px;
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.hero-badge {
+  display: inline-block;
+  background: #ffebdc;
+  color: var(--accent-dark);
+  border-radius: 999px;
+  padding: 6px 12px;
+  margin-bottom: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.7rem, 4vw, 2.7rem);
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+.hero-subtitle {
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+
+.hero-cta {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 16px;
+  background: linear-gradient(140deg, var(--accent), #d9744f);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.hero-cta:hover {
+  transform: translateY(-2px);
+}
+
+.hero-stats {
+  display: grid;
+  gap: 10px;
+}
+
+.hero-stats article {
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  padding: 16px;
+  background: #fff8f1;
+}
+
+.hero-stats h3 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+  color: var(--accent-dark);
+}
+
+.hero-stats p {
+  color: var(--text-muted);
+}
+
+.book-form {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.book-form input,
+.book-form textarea,
+.book-form button {
+  font: inherit;
+}
+
+.book-form input,
+.book-form textarea {
+  border: 1px solid #dec9b7;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.book-form button {
+  width: fit-content;
+  border: none;
+  border-radius: 9px;
+  padding: 10px 16px;
+  background: linear-gradient(140deg, var(--accent), #d9744f);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+  gap: 14px;
+}
+
+.book-card {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #eadccf;
+  background: #fff;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(83, 47, 25, 0.12);
+}
+
+.book-image {
+  width: 100%;
+  height: 155px;
+  object-fit: cover;
+}
+
+.book-content {
+  padding: 12px;
+}
+
+.book-content h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.book-content .meta {
+  color: #734834;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.book-content p {
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.team-card {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #eadccf;
+  background: #fff;
+}
+
+.team-avatar {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.team-role {
+  color: #8a4d37;
+  margin: 4px 0 8px;
+  font-weight: 600;
+}
+
+.contact-form,
+.auth-form {
+  max-width: 480px;
+}
+
+.info-message {
+  color: #2e6e34;
+  background: #ebf8ef;
+  border: 1px solid #b9dfc0;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.app-footer {
+  margin-top: 18px;
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #704736;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 850px) {
+  .landing-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-tabs button {
+    flex: 1 1 calc(33% - 10px);
+  }
+}
+
+@media (max-width: 560px) {
+  .app-header,
+  .nav-tabs,
+  .landing-hero,
+  .book-form,
+  .app-footer {
+    border-radius: 12px;
+  }
+
+  .nav-tabs button {
+    flex: 1 1 calc(50% - 10px);
+  }
+}
