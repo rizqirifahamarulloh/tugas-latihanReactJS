@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { getAuthor } from "../../../_services/authors";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { getAuthor, deleteAuthor } from "../../../_services/authors";
 
 export default function AuthorShow() {
   const { id } = useParams();
@@ -31,7 +31,25 @@ export default function AuthorShow() {
       <div className="mx-auto max-w-2xl rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Author: {author.name}</h2>
-          <Link to="/admin/authors" className="text-sm text-indigo-600 hover:underline">Back</Link>
+          <div className="flex items-center gap-3">
+            <Link to="/admin/authors" className="text-sm text-indigo-600 hover:underline">Back</Link>
+            <Link to={`/admin/authors/${author.id}/edit`} className="text-sm text-green-600 hover:underline">Edit</Link>
+            <button
+              onClick={async () => {
+                if (!window.confirm('Hapus author ini dari database?')) return;
+                try {
+                  await deleteAuthor(author.id);
+                  window.location.href = '/admin/authors';
+                } catch (err) {
+                  console.error(err);
+                  alert('Gagal menghapus author');
+                }
+              }}
+              className="text-sm text-red-600 hover:underline"
+            >
+              Delete
+            </button>
+          </div>
         </div>
 
         <div className="mt-4 text-sm text-gray-700 dark:text-gray-300">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getGenres } from "../../../_services/genres";
+import { getGenres, deleteGenre } from "../../../_services/genres";
 
 export default function AdminGenres() {
   const [genres, setGenres] = useState([]);
@@ -45,6 +45,7 @@ export default function AdminGenres() {
                   <th className="px-3 py-2">#</th>
                   <th className="px-3 py-2">Name</th>
                   <th className="px-3 py-2">Description</th>
+                  <th className="px-3 py-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -61,7 +62,26 @@ export default function AdminGenres() {
                       <td className="px-3 py-2 align-top">{g.name}</td>
                       <td className="px-3 py-2 align-top text-sm text-gray-600">{g.description || '-'}</td>
                       <td className="px-3 py-2 align-top">
-                        <a href={`/admin/genres/${g.id}`} className="text-xs text-indigo-600 hover:underline">View</a>
+                        <div className="flex items-center gap-2">
+                          <a href={`/admin/genres/${g.id}`} className="text-xs text-indigo-600 hover:underline">View</a>
+                          <a href={`/admin/genres/${g.id}/edit`} className="text-xs text-green-600 hover:underline">Edit</a>
+                          <button
+                            onClick={async () => {
+                              const ok = window.confirm('Hapus genre ini dari database?');
+                              if (!ok) return;
+                              try {
+                                await deleteGenre(g.id);
+                                setGenres((cur) => cur.filter((it) => it.id !== g.id));
+                              } catch (err) {
+                                console.error(err);
+                                alert('Gagal menghapus genre');
+                              }
+                            }}
+                            className="text-xs text-red-600 hover:underline"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

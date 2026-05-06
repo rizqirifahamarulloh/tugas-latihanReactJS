@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAuthors } from "../../../_services/authors";
+import { getAuthors, deleteAuthor } from "../../../_services/authors";
 
 export default function AdminAuthors() {
   const [authors, setAuthors] = useState([]);
@@ -60,7 +60,26 @@ export default function AdminAuthors() {
                       <td className="px-3 py-2 align-top">{idx + 1}</td>
                       <td className="px-3 py-2 align-top">{a.name}</td>
                       <td className="px-3 py-2 align-top">
-                        <a href={`/admin/authors/${a.id}`} className="text-xs text-indigo-600 hover:underline">View</a>
+                        <div className="flex items-center gap-2">
+                          <a href={`/admin/authors/${a.id}`} className="text-xs text-indigo-600 hover:underline">View</a>
+                          <a href={`/admin/authors/${a.id}/edit`} className="text-xs text-green-600 hover:underline">Edit</a>
+                          <button
+                            onClick={async () => {
+                              const ok = window.confirm('Hapus author ini dari database?');
+                              if (!ok) return;
+                              try {
+                                await deleteAuthor(a.id);
+                                setAuthors((cur) => cur.filter((it) => it.id !== a.id));
+                              } catch (err) {
+                                console.error(err);
+                                alert('Gagal menghapus author');
+                              }
+                            }}
+                            className="text-xs text-red-600 hover:underline"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
