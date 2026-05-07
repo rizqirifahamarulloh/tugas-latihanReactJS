@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../../_services/auth";
+import { login, getStoredAuthToken, getStoredUserInfo } from "../../_services/auth";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -19,12 +19,28 @@ export default function Login() {
     setErrorMessage("");
 
     try {
-      await login(formData);
-      navigate("/admin/books");
+      const resp = await login(formData);
+
+      const token = getStoredAuthToken();
+      const user = getStoredUserInfo();
+
+      console.log("Login response:", resp);
+      console.log("accessToken:", JSON.stringify(token));
+      console.log("userInfo:", JSON.stringify(user));
+
+      // keep showing signing state for 2.5s then navigate based on role
+      setTimeout(() => {
+        setIsSubmitting(false);
+        const role = user?.role || (resp?.user && resp.user.role) || resp?.role;
+        if (role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      }, 2500);
     } catch (error) {
       console.error("Login failed:", error);
       setErrorMessage("Login gagal. Periksa email dan password Anda.");
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -84,7 +100,7 @@ export default function Login() {
                 disabled={isSubmitting}
                 className="w-full text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center disabled:cursor-not-allowed disabled:opacity-70 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
               >
-                {isSubmitting ? "Signing in..." : "Sign in"}
+                {isSubmitting ? "Signing In..." : "Sign in"}
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Don’t have an account yet?{" "}

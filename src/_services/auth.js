@@ -16,15 +16,37 @@ const storeAuthToken = (responseData) => {
   return token;
 };
 
+const storeUserInfo = (responseData) => {
+  const user =
+    responseData?.user ||
+    responseData?.data?.user ||
+    responseData?.data ||
+    responseData?.userInfo ||
+    responseData?.data?.userInfo ||
+    null;
+
+  if (user) {
+    try {
+      localStorage.setItem("userInfo", JSON.stringify(user));
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  return user;
+};
+
 export const login = async (payload) => {
   const response = await API.post("/login", payload);
   storeAuthToken(response.data);
+  storeUserInfo(response.data);
   return response.data;
 };
 
 export const register = async (payload) => {
   const response = await API.post("/register", payload);
   storeAuthToken(response.data);
+  storeUserInfo(response.data);
   return response.data;
 };
 
@@ -35,4 +57,24 @@ export const getStoredAuthToken = () => {
     localStorage.getItem("auth_token") ||
     ""
   );
+};
+
+export const getStoredUserInfo = () => {
+  try {
+    const raw = localStorage.getItem("userInfo") || "";
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const logout = () => {
+  try {
+    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("userInfo");
+  } catch (e) {
+    // ignore
+  }
 };

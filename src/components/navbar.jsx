@@ -1,6 +1,37 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getStoredUserInfo, logout } from "../_services/auth";
 
 export default function Navbar() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    setUser(getStoredUserInfo());
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    setUser(null);
+    navigate('/login');
+  };
+
+  const ProfileMenu = () => {
+    const [open, setOpen] = useState(false);
+    return (
+      <div className="relative text-left">
+        <button onClick={() => setOpen(v => !v)} className="flex items-center">
+          <img className="w-8 h-8 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png" alt="user" />
+        </button>
+        {open && (
+          <div className="absolute right-0 mt-2 w-40 bg-white rounded shadow py-1">
+            <button onClick={() => { setOpen(false); navigate('/profile'); }} className="block w-full text-left px-3 py-2 text-sm">Settings</button>
+            <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-sm">Logout</button>
+          </div>
+        )}
+      </div>
+    );
+  };
   return (
     <>
       <header>
@@ -17,18 +48,24 @@ export default function Navbar() {
               </span>
             </Link>
             <div className="flex items-center lg:order-2">
-              <Link
-                to="/login"
-                className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-              >
-                Masuk
-              </Link>
-              <Link
-                to="/register"
-                className="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
-              >
-                Bergabung
-              </Link>
+              {user ? (
+                <ProfileMenu />
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+                  >
+                    Masuk
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="text-white bg-indigo-700 hover:bg-indigo-800 focus:ring-4 focus:ring-indigo-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-indigo-600 dark:hover:bg-indigo-700 focus:outline-none dark:focus:ring-indigo-800"
+                  >
+                    Bergabung
+                  </Link>
+                </>
+              )}
               <button
                 data-collapse-toggle="mobile-menu-2"
                 type="button"

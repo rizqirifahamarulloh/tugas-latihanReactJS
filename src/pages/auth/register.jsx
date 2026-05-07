@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { register } from "../../_services/auth";
+import { register, getStoredAuthToken, getStoredUserInfo } from "../../_services/auth";
 
 export default function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -23,8 +24,21 @@ export default function Register() {
     setErrorMessage("");
 
     try {
-      await register(formData);
-      navigate("/admin/books");
+      const resp = await register(formData);
+
+      const token = getStoredAuthToken();
+      const user = getStoredUserInfo();
+
+      console.log("Register response:", resp);
+      console.log("accessToken:", JSON.stringify(token));
+      console.log("userInfo:", JSON.stringify(user));
+
+      const role = user?.role || (resp?.user && resp.user.role) || resp?.role;
+      if (role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       console.error("Register failed:", error);
       setErrorMessage("Registrasi gagal. Cek input Anda dan coba lagi.");
@@ -62,6 +76,24 @@ export default function Register() {
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Your name"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="username"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  id="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="username"
                   required
                 />
               </div>

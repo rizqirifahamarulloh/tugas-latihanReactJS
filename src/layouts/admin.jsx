@@ -1,6 +1,78 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getStoredAuthToken, getStoredUserInfo, logout } from "../_services/auth";
+
+function ProfileMenu() {
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const user = getStoredUserInfo();
+
+  const handleLogout = () => {
+    logout();
+    setOpen(false);
+    navigate("/login");
+  };
+
+  const goSettings = () => {
+    setOpen(false);
+    // navigate to settings/profile page (create if needed)
+    navigate("/profile");
+  };
+
+  return (
+    <div className="relative text-left">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+        aria-expanded={open}
+      >
+        <span className="sr-only">Open user menu</span>
+        <img
+          className="w-8 h-8 rounded-full"
+          src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png"
+          alt="user photo"
+        />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 z-50 mt-2 w-56 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+          <div className="py-3 px-4">
+            <span className="block text-sm font-semibold text-gray-900 dark:text-white">{user?.name || user?.username || "User"}</span>
+            <span className="block text-sm text-gray-900 truncate dark:text-white">{user?.email || ""}</span>
+          </div>
+          <ul className="py-1 text-gray-700 dark:text-gray-200">
+            <li>
+              <button onClick={goSettings} className="w-full text-left py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600">Settings</button>
+            </li>
+            <li>
+              <button onClick={handleLogout} className="w-full text-left py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600">Logout</button>
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AdminLayout() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = getStoredAuthToken();
+    const user = getStoredUserInfo();
+
+    if (!token || !user) {
+      navigate("/login");
+      return;
+    }
+
+    // if user exists but is not admin, redirect to home
+    if (user && user.role && user.role !== "admin") {
+      navigate("/");
+      return;
+    }
+  }, [navigate]);
   return (
     <>
       <div className="antialiased bg-gray-50 dark:bg-gray-900">
@@ -85,40 +157,15 @@ export default function AdminLayout() {
                 aria-expanded="false"
                 data-dropdown-toggle="dropdown"
               >
-                <span className="sr-only">Open user menu</span>
+                {/* <span className="sr-only">Open user menu</span>
                 <img
                   className="w-8 h-8 rounded-full"
                   src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/michael-gough.png"
                   alt="user photo"
-                />
+                /> */}
               </button>
-              {/* <!-- Dropdown menu --> */}
-              <div
-                className="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600 rounded-xl"
-                id="dropdown"
-              >
-                <div className="py-3 px-4">
-                  <span className="block text-sm font-semibold text-gray-900 dark:text-white">
-                    Neil Sims
-                  </span>
-                  <span className="block text-sm text-gray-900 truncate dark:text-white">
-                    name@flowbite.com
-                  </span>
-                </div>
-                <ul
-                  className="py-1 text-gray-700 dark:text-gray-300"
-                  aria-labelledby="dropdown"
-                >
-                  <li>
-                    <a
-                      href="#"
-                      className="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                      Sign out
-                    </a>
-                  </li>
-                </ul>
-              </div>
+              {/* Profile dropdown (Settings, Logout) */}
+              <ProfileMenu />
             </div>
           </div>
         </nav>
