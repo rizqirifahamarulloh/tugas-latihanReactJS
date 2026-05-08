@@ -1,18 +1,16 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { getBooks } from "../../../_services/books";
-import { getGenres } from "../../../_services/genres";
-import { getAuthors } from "../../../_services/authors";
-import { deleteBook } from "../../../_services/books";
-
-
+import { useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { getBooks, deleteBook } from "../../../_services/books"
+import { getGenres } from "../../../_services/genres"
+import { getAuthors } from "../../../_services/authors"
+import BookCover from "../../../components/book-cover"
 
 export default function AdminBooks() {
-  const navigate = useNavigate();
-  const [books, setBooks] = useState([]);
-  const [genres, setGenres] = useState([]);
-  const [authors, setAuthors] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate()
+  const [books, setBooks] = useState([])
+  const [genres, setGenres] = useState([])
+  const [authors, setAuthors] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -20,75 +18,75 @@ export default function AdminBooks() {
         const [booksData, genresData, authorsData] = await Promise.all([
           getBooks(),
           getGenres(),
-          getAuthors(),
-        ]);
+          getAuthors()
+        ])
 
-        setBooks(booksData);
-        setGenres(genresData);
-        setAuthors(authorsData);
+        setBooks(booksData)
+        setGenres(genresData)
+        setAuthors(authorsData)
       } catch (error) {
-        console.error("Failed to fetch admin books data:", error);
+        console.error("Failed to fetch admin books data", error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
-    fetchData();
-  }, []);
+    }
+    fetchData()
+  }, [])
 
   const getGenreName = (id) => {
-    const genre = genres.find((g) => g.id === id);
-    return genre ? genre.name : "Unknown Genre";
-  };
+    const genre = genres?.find((g) => g.id === id)
+    return genre ? genre.name : "Unknown Genre"
+  }
 
   const getAuthorName = (book) => {
-    if (!book) return "Unknown Author";
+    if (!book) return "Unknown Author"
 
     if (typeof book.author === "string" && book.author.trim()) {
-      return book.author;
+      return book.author
     }
 
     if (book.author?.name) {
-      return book.author.name;
+      return book.author.name
     }
 
     if (book.author_name) {
-      return book.author_name;
+      return book.author_name
     }
 
-    const author = authors.find(
+    const author = authors?.find(
       (item) => String(item.id) === String(book.author_id) || item.name === book.author_id
-    );
+    )
 
-    return author ? author.name : book.author_id || "Unknown Author";
+    return author ? author.name : book.author_id || "Unknown Author"
   }
 
   const formatPrice = (value) => {
-    if (value === null || value === undefined || value === "") return "-";
-    const num = Number(value);
-    if (Number.isNaN(num)) return String(value);
-    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num);
-  };
+    if (value === null || value === undefined || value === "") return "-"
+    const num = Number(value)
+    if (Number.isNaN(num)) return String(value)
+    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(num)
+  }
 
   const handleDelete = async (id) => {
-    const isConfirmed = window.confirm("Hapus product ini dari database?");
+    const isConfirmed = window.confirm("Hapus product ini dari database?")
 
-    if (!isConfirmed) return;
+    if (!isConfirmed) return
 
     try {
-      await deleteBook(id);
-      setBooks((current) => current.filter((book) => book.id !== id));
+      await deleteBook(id)
+      setBooks((current) => current.filter((book) => book.id !== id))
     } catch (error) {
-      console.error("Failed to delete book:", error);
+      console.error("Failed to delete book", error)
     }
-  };
+  }
 
   const handleEdit = (id) => {
-    navigate(`/admin/books/${id}/edit`);
-  };
+    navigate(`/admin/books/${id}/edit`)
+  }
 
   const handleView = (id) => {
-  navigate(`/admin/books/${id}`);
-};
+    navigate(`/admin/books/${id}`)
+  }
 
   return (
     <>
@@ -198,43 +196,52 @@ export default function AdminBooks() {
                         <td className="px-4 py-3">{book.description}</td>
                         <td className="px-4 py-3">{book.stock}</td>
                         <td className="px-4 py-3">{formatPrice(book.price)}</td>
-                        <td className="px-4 py-3">{book.cover_photo}</td>
+                        <td className="px-4 py-3">
+                          {book.cover_photo ? (
+                            <BookCover
+                              path={book.cover_photo}
+                              alt={book.title}
+                              className="h-16 w-12 object-cover rounded shadow-sm"
+                              fallbackClassName="h-16 w-12 rounded bg-gray-100 text-[10px] text-gray-400 flex items-center justify-center"
+                              fallbackText="No cover"
+                            />
+                          ) : (
+                            <span className="text-gray-400 italic">No Image</span>
+                          )}
+                        </td>
                         <td className="px-4 py-3">{getGenreName(book.genre_id)}</td>
                         <td className="px-4 py-3">{getAuthorName(book)}</td>
                         <td className="px-4 py-3 text-right">
-      <div className="flex items-center justify-end gap-2">
-    {/* TOMBOL VIEW BARU */}
-    <button
-      type="button"
-      onClick={() => handleView(book.id)}
-      className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-    >
-      View
-    </button>
-
-    <button
-      type="button"
-      onClick={() => handleEdit(book.id)}
-      className="rounded-lg border border-indigo-300 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-50 dark:border-indigo-700 dark:text-indigo-300 dark:hover:bg-indigo-900/30"
-    >
-      Edit
-    </button>
-
-    <button
-      type="button"
-      onClick={() => handleDelete(book.id)}
-      className="rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-900/30"
-    >
-      Delete
-    </button>
-  </div>
-</td>
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleView(book.id)}
+                              className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                            >
+                              View
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleEdit(book.id)}
+                              className="rounded-lg border border-indigo-300 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-50 dark:border-indigo-700 dark:text-indigo-300 dark:hover:bg-indigo-900/30"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(book.id)}
+                              className="rounded-lg border border-red-300 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-50 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-900/30"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
                       <td className="px-4 py-6 text-center text-gray-500 dark:text-gray-400" colSpan="7">
-                        No books found.
+                        No books found
                       </td>
                     </tr>
                   )}
@@ -258,7 +265,7 @@ export default function AdminBooks() {
               <ul className="inline-flex items-stretch -space-x-px">
                 <li>
                   <a
-                    href="#"
+                    href=""
                     className="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                   >
                     <span className="sr-only">Previous</span>
@@ -279,7 +286,7 @@ export default function AdminBooks() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href=""
                     className="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                   >
                     1
@@ -287,7 +294,7 @@ export default function AdminBooks() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href=""
                     className="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                   >
                     2
@@ -295,7 +302,7 @@ export default function AdminBooks() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href=""
                     aria-current="page"
                     className="flex items-center justify-center text-sm z-10 py-2 px-3 leading-tight text-indigo-600 bg-indigo-50 border border-indigo-300 hover:bg-indigo-100 hover:text-indigo-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
                   >
@@ -304,7 +311,7 @@ export default function AdminBooks() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href=""
                     className="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                   >
                     ...
@@ -312,7 +319,7 @@ export default function AdminBooks() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href=""
                     className="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                   >
                     100
@@ -320,7 +327,7 @@ export default function AdminBooks() {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href=""
                     className="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                   >
                     <span className="sr-only">Next</span>
@@ -344,5 +351,5 @@ export default function AdminBooks() {
           </div>
       </section>
     </>
-  );
+  )
 }

@@ -46,6 +46,46 @@ h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
 
+:root {
+  color-scheme: light;
+  background: #ffffff;
+  color: #111827;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background: #ffffff !important;
+  color: #111827;
+}
+
+body {
+  background-color: #ffffff !important;
+}
+
+/* Force the app into a white visual theme even where Tailwind gray/dark utilities exist. */
+[class*="bg-gray-"],
+[class*="bg-slate-"],
+[class*="bg-zinc-"],
+[class*="bg-stone-"] {
+  background-color: #ffffff !important;
+}
+
+[class*="text-gray-"],
+[class*="text-slate-"],
+[class*="text-zinc-"],
+[class*="text-stone-"] {
+  color: #374151 !important;
+}
+
+[class*="border-gray-"],
+[class*="border-slate-"],
+[class*="border-zinc-"],
+[class*="border-stone-"] {
+  border-color: #e5e7eb !important;
+}
+
 /*
   10. Create a root stacking context
 */

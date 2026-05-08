@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBooks } from "../../../_services/books";
+import BookCover from "../../../components/book-cover";
 
 function formatPrice(value) {
   if (value === null || value === undefined || value === "") return "-";
@@ -42,9 +43,14 @@ export default function Books() {
                 <div key={b.id} className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                   <div className="h-56 w-full mb-4 flex items-center justify-center overflow-hidden">
                     {b.cover_photo ? (
-                      <img src={b.cover_photo} alt={b.title} className="object-contain h-full" />
+                      <BookCover
+                        path={b.cover_photo}
+                        alt={b.title}
+                        className="object-contain h-full"
+                        fallbackClassName="h-full w-full flex items-center justify-center bg-gray-100"
+                      />
                     ) : (
-                      <div className="h-full w-full flex items-center justify-center bg-gray-100 dark:bg-gray-700">No image</div>
+                      <div className="h-full w-full flex items-center justify-center bg-gray-100">No image</div>
                     )}
                   </div>
                   <div className="pt-6">

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { getBook } from "../../../_services/books";
-import API from "../../../_api";
 import { getGenres } from "../../../_services/genres";
 import { getAuthors } from "../../../_services/authors";
+import BookCover from "../../../components/book-cover";
 
 export default function AdminBookShow() {
   const { id } = useParams();
@@ -85,39 +85,14 @@ export default function AdminBookShow() {
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-1/3">
             {book.cover_photo ? (
-                // Build a usable image URL: if API returns full URL use it, otherwise
-                // combine with API base (strip trailing /api)
-                (() => {
-                  const src = (() => {
-                    if (!book.cover_photo) return null;
-                    if (String(book.cover_photo).startsWith("http")) return book.cover_photo;
-                    const apiBase = String(API.defaults.baseURL || "").replace(/\/api\/?$/i, "");
-                    return `${apiBase}/${String(book.cover_photo).replace(/^\/+/, "")}`;
-                  })();
-
-                  return (
-                    <img
-                      src={src}
-                      alt={book.title}
-                      className="w-full h-auto rounded-md object-cover"
-                      onError={(e) => {
-                        const img = e.currentTarget;
-                        // avoid retrying infinitely
-                        if (img.dataset.tried === "1") {
-                          img.style.display = "none";
-                          return;
-                        }
-
-                        img.dataset.tried = "1";
-                        const apiBase = String(API.defaults.baseURL || "").replace(/\/api\/?$/i, "");
-                        const filename = String(book.cover_photo).replace(/^\/+/, "");
-                        img.src = `${apiBase}/storage/${filename}`;
-                      }}
-                    />
-                  );
-                })()
+              <BookCover
+                path={book.cover_photo}
+                alt={book.title}
+                className="w-full h-auto rounded-md object-cover"
+                fallbackClassName="w-full h-56 bg-gray-100 rounded-md flex items-center justify-center text-gray-400"
+              />
               ) : (
-              <div className="w-full h-56 bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center text-gray-400">
+              <div className="w-full h-56 bg-gray-100 rounded-md flex items-center justify-center text-gray-400">
                 No image
               </div>
             )}

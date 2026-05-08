@@ -11,6 +11,7 @@ const initialFormData = {
   price: "",
   stock: "",
   image: null,
+  cover_path: "",
   genre_id: "",
   author_id: "",
 };
@@ -87,16 +88,16 @@ export default function BookCreate() {
       setIsSubmitting(false);
       return;
     }
-    if (!formData.image) {
-      setErrorMessage("Image is required");
+    if (!formData.image && !formData.cover_path?.trim()) {
+      setErrorMessage("Image file atau cover path wajib diisi");
       setIsSubmitting(false);
       return;
     }
 
     try {
-      const imageFile = await prepareImageFile(formData.image);
-      
-      if (!imageFile) {
+      const imageFile = formData.image ? await prepareImageFile(formData.image) : null;
+
+      if (formData.image && !imageFile) {
         setErrorMessage("Image file is invalid or too large");
         setIsSubmitting(false);
         return;
@@ -109,7 +110,11 @@ export default function BookCreate() {
       payload.append("stock", parseInt(formData.stock, 10));
       payload.append("genre_id", formData.genre_id);
       payload.append("author_id", formData.author_id);
-      payload.append("cover_photo", imageFile);
+      if (imageFile) {
+        payload.append("cover_photo", imageFile);
+      } else {
+        payload.append("cover_photo", formData.cover_path.trim().replace(/\\/g, "/"));
+      }
 
       // Log payload contents
       console.log("FormData contents:");
@@ -120,6 +125,7 @@ export default function BookCreate() {
       console.log("  genre_id:", formData.genre_id);
       console.log("  author_id:", formData.author_id);
       console.log("  image:", imageFile?.name, "size:", imageFile?.size);
+      console.log("  cover_path:", formData.cover_path);
 
       await createBook(payload);
       navigate("/admin/books");
@@ -242,11 +248,26 @@ export default function BookCreate() {
               accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
               onChange={handleChange}
               className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              required
             />
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Upload PNG, JPG, JPEG, atau WEBP.
+              Upload PNG, JPG, JPEG, atau WEBP. Atau isi path cover di bawah.
             </p>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-900 dark:text-white" htmlFor="cover_path">
+              Cover Path (opsional)
+            </label>
+            <input
+              id="cover_path"
+              name="cover_path"
+              type="text"
+              value={formData.cover_path}
+              onChange={handleChange}
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500"
+              placeholder="contoh: ui/ux.jpg atau covers/ui/ux.jpg"
+            />
+            <p className="mt-1 text-xs text-gray-500">Gunakan jika file sudah tersedia di backend/public/covers.</p>
           </div>
 
           <div>

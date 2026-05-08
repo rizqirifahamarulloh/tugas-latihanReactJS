@@ -11,6 +11,7 @@ const initialFormData = {
   price: "",
   stock: "",
   image: null,
+  cover_path: "",
   current_image: "",
   genre_id: "",
   author_id: "",
@@ -41,6 +42,7 @@ export default function BookEdit() {
           price: bookData?.price ?? "",
           stock: bookData?.stock ?? "",
           image: null,
+          cover_path: (bookData?.image ?? bookData?.cover_photo ?? "").replace(/\\/g, "/"),
           current_image: bookData?.image ?? bookData?.cover_photo ?? "",
           genre_id: bookData?.genre_id ?? "",
           author_id: bookData?.author_id ?? "",
@@ -102,8 +104,8 @@ export default function BookEdit() {
       setIsSubmitting(false);
       return;
     }
-    if (!formData.image && !formData.current_image) {
-      setErrorMessage("Image is required");
+    if (!formData.image && !formData.cover_path?.trim() && !formData.current_image) {
+      setErrorMessage("Image file atau cover path wajib diisi");
       setIsSubmitting(false);
       return;
     }
@@ -120,6 +122,8 @@ export default function BookEdit() {
 
       if (imageFile) {
         payload.append("cover_photo", imageFile);
+      } else if (formData.cover_path?.trim()) {
+        payload.append("cover_photo", formData.cover_path.trim().replace(/\\/g, "/"));
       } else if (formData.current_image) {
         payload.append("cover_photo", formData.current_image);
       }
@@ -259,6 +263,22 @@ export default function BookEdit() {
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Current: {formData.current_image || "No image"}
             </p>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-900 dark:text-white" htmlFor="cover_path">
+              Cover Path (opsional)
+            </label>
+            <input
+              id="cover_path"
+              name="cover_path"
+              type="text"
+              value={formData.cover_path}
+              onChange={handleChange}
+              className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:ring-indigo-500"
+              placeholder="contoh: ui/ux.jpg atau covers/ui/ux.jpg"
+            />
+            <p className="mt-1 text-xs text-gray-500">Isi jika menggunakan gambar yang sudah ada di backend.</p>
           </div>
 
           <div>

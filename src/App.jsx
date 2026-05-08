@@ -2,9 +2,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Home from "./pages/public/index.jsx"
 import PublicLayout from "./layouts/public.jsx"
 import Books from "./pages/public/books/index.jsx"
+import ShowBook from "./pages/public/books/show.jsx"
 import Login from "./pages/auth/login.jsx"
 import Register from "./pages/auth/register.jsx"
 import AdminLayout from "./layouts/admin.jsx"
+import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/admin/index.jsx"
 import AdminBooks from "./pages/admin/books/index.jsx"
 import BookCreate from "./pages/admin/books/create.jsx"
@@ -28,6 +30,7 @@ function App() {
           <Route element={<PublicLayout />}>
             <Route index element={<Home />} />
             <Route path="books" element={<Books />} />
+            <Route path="books/:id" element={<ShowBook />} />
           </Route>
 
           {/* Auth Routes */}
@@ -35,7 +38,7 @@ function App() {
           <Route path="register" element={<Register />} />
 
           {/* Admin Routes */}
-          <Route path="admin" element={<AdminLayout />}>
+          <Route path="admin" element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
             <Route index element={<Dashboard />} />
 
             <Route path="books">
